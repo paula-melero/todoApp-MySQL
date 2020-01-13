@@ -1,0 +1,8 @@
+{
+  "jwtPrivateKey": "",
+  "db": {
+    "host": "remotemysql.com",
+    "username": "oLbnEAC5tr",
+    "password": "AvK1rxQl7T"
+  }
+}

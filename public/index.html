@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge"> 
+  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.0.min.js"></script> 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> 
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css" type="text/css">
+
+
+
+  <title>TodoTracker</title>
+</head>
+<body onload="getList()">
+
+  <div class="container">
+    <h1 id="title">Todo Tracker</h1>
+
+    <form id="taskInput">
+      <input name='name' type="text" id='user-todo' placeholder="New Todo" required><br>
+      <textarea name='description' type="text" id='user-description' placeholder='Task Description' required></textarea><br>
+      <input type='submit' id='addButton' value='Add'>   
+    </form>
+    
+  
+    <h2 id="todo-header">Todos</h2>
+    <div id='taskList'>
+    </div>
+  
+    <button id="clear">Clear All</button>
+    
+
+  </div>
+  
+ <script src="app.js"></script>
+</body>
+</html>
