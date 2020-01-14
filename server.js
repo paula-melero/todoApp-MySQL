@@ -22,3 +22,5 @@ const server = app.listen(port, () => {
 
 //export server obj to use with integration tests
 module.exports = server;
+
+//try using task and user models w/ validate functions in it.
