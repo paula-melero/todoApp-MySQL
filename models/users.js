@@ -1,34 +1,37 @@
 require("dotenv").config();
-const mongoose = require("mongoose");
-const { taskSchema } = require("../models/tasks");
+const Sequelize = require("sequelize");
+const { Task } = require("../models/tasks");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 
-const userSchema = new mongoose.Schema({
+const User = sequelize.define("user", {
   username: {
-    type: String,
-    required: true,
-    alphanum: true,
-    minlength: 3,
-    maxlength: 30,
-    unique: true
+    type: Sequelize.String(30),
+    primaryKey: true,
+    allowNull: false,
+    unique: true,
+    validate: { min: 3 }
   },
   password: {
-    type: String,
-    required: true,
-    minlength: 6,
-    maxlength: 999
+    type: Sequelize.STRING(999),
+    allowNull: false,
+    validate: { min: 6 }
   },
-  isAdmin: Boolean
+  isAdmin: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
+  }
 });
 
-userSchema.methods.generateAuthToken = function() {
+//Define model relationships
+User.hasMany(Task, { as: "createdBy" });
+
+User.methods.generateAuthToken = function() {
   return (token = jwt.sign(
     { _id: this._id, isAdmin: this.isAdmin },
     process.env.jwtPrivateKey
   ));
 };
-const User = mongoose.model("User", userSchema);
 
 //INPUT VALIDATION FUNCTION
 function validateUser(user) {
