@@ -1,4 +1,5 @@
 require("dotenv").config();
+const sequelize = require("../startup/db");
 const Sequelize = require("sequelize");
 const { Task } = require("../models/tasks");
 const Joi = require("joi");
@@ -24,7 +25,11 @@ const User = sequelize.define("user", {
 });
 
 //Define model relationships
-User.hasMany(Task, { as: "createdBy" });
+User.hasMany(Task, {
+  as: "createdBy",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE"
+});
 
 User.methods.generateAuthToken = function() {
   return (token = jwt.sign(
