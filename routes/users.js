@@ -2,11 +2,27 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const _ = require("lodash");
 const router = express.Router();
+const Joi = require("joi");
 const auth = require("../middleware/auth");
 const asyncMiddleware = require("../middleware/async");
 const admin = require("../middleware/admin");
-const { User, validateUser } = require("../models/user");
+const User = require("../models/user.js");
+const { sequelize, DataTypes } = require("sequelize");
+function validateUser(user) {
+  const schema = {
+    username: Joi.string()
+      .min(3)
+      .max(30)
+      .required(),
+    password: Joi.string()
+      .min(6)
+      .max(255)
+      .required(),
+    repeat_password: Joi.ref("password")
+  };
 
+  return Joi.validate(user, schema);
+}
 //GET ALL USERS
 // router.get(
 //   "/",
@@ -44,12 +60,11 @@ router.post(
   "/",
   asyncMiddleware(async (req, res) => {
     const { error } = validateUser(req.body);
-
     if (error) return res.status(400).json(error.details[0].message);
-
+    const userObj = User(sequelize, DataTypes);
+    console.log("User", userObj);
     const { username, password, repeat_password } = req.body;
-
-    let user = await User.findOne({ where: username });
+    let user = await userObj.findAll({ where: username });
 
     //check if username exists
     if (user)
@@ -64,7 +79,7 @@ router.post(
     const hash = await bcrypt.hash(password, salt);
 
     //create document and save
-    user = new User({ username, password: hash });
+    // user = new User({ username, password: hash });
     await User.create({ username, password: hash });
 
     //generate JWT
