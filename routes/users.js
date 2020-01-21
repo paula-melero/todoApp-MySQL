@@ -6,23 +6,8 @@ const Joi = require('joi');
 const auth = require('../middleware/auth');
 const asyncMiddleware = require('../middleware/async');
 const admin = require('../middleware/admin');
-const { User, generateAuthToken } = require('../models/user.js');
+const { User, generateAuthToken, validateUser } = require('../models/user.js');
 
-function validateUser(user) {
-  const schema = {
-    username: Joi.string()
-      .min(3)
-      .max(30)
-      .required(),
-    password: Joi.string()
-      .min(6)
-      .max(255)
-      .required(),
-    repeat_password: Joi.ref('password')
-  };
-
-  return Joi.validate(user, schema);
-}
 //GET ALL USERS
 // router.get(
 //   "/",
@@ -63,11 +48,7 @@ router.post(
 
     if (error) return res.status(400).json(error.details[0].message);
 
-    const { username, password, repeat_password } = req.body;
-
-    //check if passwords match
-    if (password !== repeat_password)
-      res.status(400).json({ message: "Passwords don't match" });
+    const { username, password } = req.body;
 
     //hash password
     const salt = await bcrypt.genSalt(10);
@@ -81,7 +62,8 @@ router.post(
 
     //return token in HTTP header
     res.header('x-auth-token', token);
-    res.status(200).json(_.pick(result, ['id', 'username']));
+    res.status(201).json(_.pick(result, ['id', 'username']));
+    //could return this { message: 'User registered successfully!' }
   })
 );
 

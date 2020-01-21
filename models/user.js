@@ -24,6 +24,23 @@ const User = sequelize.define('user', {
     validate: { min: 6 }
   }
 });
+
+const validateUser = user => {
+  const schema = {
+    username: Joi.string()
+      .min(3)
+      .max(30)
+      .required(),
+    password: Joi.string()
+      .min(6)
+      .max(255)
+      .required(),
+    repeat_password: Joi.ref('password')
+  };
+
+  return Joi.validate(user, schema);
+};
+
 const generateAuthToken = (id, isAdmin) => {
   return (token = jwt.sign(
     { id: id, isAdmin: isAdmin },
@@ -31,4 +48,5 @@ const generateAuthToken = (id, isAdmin) => {
   ));
 };
 exports.User = User;
+exports.validateUser = validateUser;
 exports.generateAuthToken = generateAuthToken;
