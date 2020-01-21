@@ -1,10 +1,10 @@
-require("dotenv").config();
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const _ = require("lodash");
-const Joi = require("joi");
+require('dotenv').config();
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const _ = require('lodash');
+const Joi = require('joi');
 const router = express.Router();
-const { User } = require("../models/users");
+const { User } = require('../models/user');
 
 function validate(req) {
   const schema = {
@@ -22,7 +22,7 @@ function validate(req) {
 }
 
 //LOGIN A USER
-router.post("/", async (req, res) => {
+router.post('/', async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).json(error.details[0].message);
 
@@ -31,20 +31,20 @@ router.post("/", async (req, res) => {
     let user = await User.findOne({ username });
 
     if (!user)
-      return res.status(400).json({ message: "Invalid username or password" });
+      return res.status(400).json({ message: 'Invalid username or password' });
 
     //password check
     const validPwd = await bcrypt.compare(password, user.password);
 
     if (!validPwd)
-      return res.status(400).json({ message: "Invalid username or password" });
+      return res.status(400).json({ message: 'Invalid username or password' });
 
     //generate JWT
     const token = user.generateAuthToken();
 
     //return token in HTTP header
-    res.header("x-auth-token", token);
-    res.send(_.pick(user, ["_id", "username"]));
+    res.header('x-auth-token', token);
+    res.send(_.pick(user, ['_id', 'username']));
   } catch (err) {
     res.status(500).json(err.message);
   }

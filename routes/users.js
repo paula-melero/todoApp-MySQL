@@ -1,13 +1,13 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const _ = require("lodash");
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const _ = require('lodash');
 const router = express.Router();
-const Joi = require("joi");
-const auth = require("../middleware/auth");
-const asyncMiddleware = require("../middleware/async");
-const admin = require("../middleware/admin");
-const User = require("../models/user.js");
-const { sequelize, DataTypes } = require("sequelize");
+const Joi = require('joi');
+const auth = require('../middleware/auth');
+const asyncMiddleware = require('../middleware/async');
+const admin = require('../middleware/admin');
+const { User, generateAuthToken } = require('../models/user.js');
+
 function validateUser(user) {
   const schema = {
     username: Joi.string()
@@ -18,7 +18,7 @@ function validateUser(user) {
       .min(6)
       .max(255)
       .required(),
-    repeat_password: Joi.ref("password")
+    repeat_password: Joi.ref('password')
   };
 
   return Joi.validate(user, schema);
@@ -57,18 +57,13 @@ function validateUser(user) {
 
 //REGISTER A USER
 router.post(
-  "/",
+  '/',
   asyncMiddleware(async (req, res) => {
     const { error } = validateUser(req.body);
-    if (error) return res.status(400).json(error.details[0].message);
-    const userObj = User(sequelize, DataTypes);
-    console.log("User", userObj);
-    const { username, password, repeat_password } = req.body;
-    let user = await userObj.findAll({ where: username });
 
-    //check if username exists
-    if (user)
-      return res.status(400).json({ message: "Username already exists" });
+    if (error) return res.status(400).json(error.details[0].message);
+
+    const { username, password, repeat_password } = req.body;
 
     //check if passwords match
     if (password !== repeat_password)
@@ -79,15 +74,14 @@ router.post(
     const hash = await bcrypt.hash(password, salt);
 
     //create document and save
-    // user = new User({ username, password: hash });
-    await User.create({ username, password: hash });
+    const result = await User.create({ username, password: hash });
 
     //generate JWT
-    const token = user.generateAuthToken();
+    const token = generateAuthToken(result.dataValues.id, false);
 
     //return token in HTTP header
-    res.header("x-auth-token", token);
-    res.status(200).json(_.pick(user, ["_id", "username"]));
+    res.header('x-auth-token', token);
+    res.status(200).json(_.pick(result, ['id', 'username']));
   })
 );
 

@@ -1,45 +1,34 @@
-"use strict";
-const jwt = require("jsonwebtoken");
+const Sequelize = require('sequelize');
+const sequelize = require('../startup/db');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 
-module.exports = (sequelize, DataTypes) => {
-  console.log("sequelize: ", sequelize);
-  const User = sequelize.define(
-    "User",
-    {
-      username: {
-        type: DataTypes.STRING(30),
-        primaryKey: true,
-        allowNull: false,
-        unique: true,
-        validate: { min: 3 }
-      },
-      password: {
-        type: DataTypes.STRING(999),
-        allowNull: false,
-        validate: { min: 6 }
-      },
-      isAdmin: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
-      }
-    },
-    {}
-  );
-
-  User.associate = function(models) {
-    User.hasMany(models.Task, {
-      as: "createdBy",
-      onDelete: "CASCADE",
-      onUpdate: "CASCADE"
-    });
-  };
-
-  User.methods.generateAuthToken = function() {
-    return (token = jwt.sign(
-      { _id: this._id, isAdmin: this.isAdmin },
-      process.env.jwtPrivateKey
-    ));
-  };
-
-  return User;
+const User = sequelize.define('user', {
+  id: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    allowNull: false,
+    primaryKey: true
+  },
+  username: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    validate: {
+      min: 3,
+      max: 30
+    }
+  },
+  password: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    validate: { min: 6 }
+  }
+});
+const generateAuthToken = (id, isAdmin) => {
+  return (token = jwt.sign(
+    { id: id, isAdmin: isAdmin },
+    config.get('jwtPrivateKey')
+  ));
 };
+exports.User = User;
+exports.generateAuthToken = generateAuthToken;
