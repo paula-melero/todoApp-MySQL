@@ -11,7 +11,6 @@ const Task = sequelize.define("task", {
   },
   description: {
     type: Sequelize.TEXT,
-    allowNull: false,
     validate: { min: 6, max: 255 }
   },
   status: {

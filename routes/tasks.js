@@ -9,7 +9,7 @@ router.get(
   "/",
   auth,
   asyncMiddleware(async (req, res, next) => {
-    const tasks = await Task.findAll({ where: { createdBy: req.user._id } });
+    const tasks = await Task.findAll({ where: { userId: req.user.id } });
 
     res.status(200).json(tasks);
   })
@@ -34,24 +34,29 @@ router.get(
 // );
 
 // //CREATE TASK FOR AUTH USER
-// router.post(
-//   "/",
-//   auth,
-//   asyncMiddleware(async (req, res) => {
-//     const { error } = validateTask(req.body);
+router.post(
+  "/",
+  auth,
+  asyncMiddleware(async (req, res) => {
+    const { error } = validateTask(req.body);
 
-//     if (error) return res.status(400).json(error.details[0].message);
+    if (error)
+      return res.status(400).json({
+        statusCode: 400,
+        errorCode: error.details[0].path + error.name,
+        message: error.details[0].message
+      });
 
-//     //create object with req values
-//     const { title, description } = req.body;
-//     const task = new Task({ title, description, createdBy: req.user._id });
+    const { title, description } = req.body;
+    const result = await Task.create({
+      title,
+      description,
+      userId: req.user.id
+    });
 
-//     //save to db
-
-//     const dbResult = await task.save();
-//     res.status(200).json(dbResult);
-//   })
-// );
+    res.status(200).json(result);
+  })
+);
 
 // //UPDATE TASK
 // router.put(

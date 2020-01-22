@@ -9,7 +9,7 @@ const sequelize = require("./startup/db");
 const { User } = require("./models/user");
 const { Task } = require("./models/task");
 
-require("./startup/routes");
+require("./startup/routes")(app);
 require("./startup/db");
 require("./startup/logging")();
 require("./startup/config")();

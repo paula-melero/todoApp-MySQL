@@ -68,7 +68,7 @@ router.post(
     //return token in HTTP header
     res.header("x-auth-token", token);
     res.status(201).json(_.pick(result, ["id", "username"]));
-    //could return this { message: 'User registered successfully!' }
+    //could return { message: 'User registered successfully!' }
   })
 );
 
