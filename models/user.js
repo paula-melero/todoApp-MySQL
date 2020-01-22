@@ -23,6 +23,11 @@ const User = sequelize.define('user', {
     type: Sequelize.STRING,
     allowNull: false,
     validate: { min: 6 }
+  },
+  isAdmin: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: 0,
+    allowNull: false
   }
 });
 
@@ -35,8 +40,7 @@ const validateUser = user => {
     password: Joi.string()
       .min(6)
       .max(255)
-      .required(),
-    repeat_password: Joi.ref('password')
+      .required()
   };
 
   return Joi.validate(user, schema);

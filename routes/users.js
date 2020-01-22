@@ -22,22 +22,23 @@ const { User, generateAuthToken, validateUser } = require('../models/user.js');
 //   })
 // );
 
-// //GET CURRENTLY LOGGED IN USER
-// router.get(
-//   "/me",
-//   auth,
-//   asyncMiddleware(async (req, res) => {
-//     console.log("reached get one user");
-//     const user = await User.findById({ _id: req.user._id }).select("-password");
+//GET CURRENTLY LOGGED IN USER
+router.get(
+  '/me',
+  auth,
+  asyncMiddleware(async (req, res) => {
+    const user = await User.findByPk(req.user.id, {
+      attributes: { exclude: ['password'] }
+    });
 
-//     if (!user)
-//       return res
-//         .status(404)
-//         .json({ message: "User with the given ID was not found" });
+    if (!user)
+      return res
+        .status(404)
+        .json({ message: 'User with the given ID was not found' });
 
-//     res.status(200).json(user);
-//   })
-// );
+    res.status(200).json(user);
+  })
+);
 
 //REGISTER A USER
 router.post(
@@ -62,7 +63,7 @@ router.post(
     const result = await User.create({ username, password: hash });
 
     //generate JWT
-    const token = generateAuthToken(result.dataValues.id, false);
+    const token = generateAuthToken(result.dataValues.id, 0);
 
     //return token in HTTP header
     res.header('x-auth-token', token);
