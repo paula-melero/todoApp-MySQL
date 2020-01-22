@@ -1,0 +1,41 @@
+sudo: required
+language: node_js
+dist: ubuntu:latest
+node_js:
+  - lts/*
+services:
+  - docker
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+before_install:
+  # login to docker registries (dockerhub + heroku)
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - echo "$HEROKU_PASSWORD" | docker login -u "$HEROKU_USERNAME" --password-stdin registry.heroku.com
+
+cache:
+  npm: true
+  directories:
+    - node_modules
+    - ~/.cache
+
+stages:
+  - name: deployment
+    if: branch = master
+
+jobs:
+  include:
+    - stage: deployment
+      script:
+        - docker-compose build pmelero/todo-app .
+        - docker tag pmelero/todo-app registry.heroku.com/$HEROKU_APP_NAME/web
+
+deploy:
+  provider: script
+  script: docker push pmelero/todo-app;
+    docker push registry.heroku.com/$HEROKU_APP_NAME/web;
+    heroku container:release web --app $HEROKU_APP_NAME
+  on:
+    branch: master

@@ -19,7 +19,7 @@ services:
       - todoApp-db:/var/lib/mysql
 
   todo-app:
-    build: ./todoApp-MySQL
+    build: ../todoApp-MySQL
     container_name: todo-app
     ports:
       - 5000:5000
