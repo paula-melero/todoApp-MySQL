@@ -1,7 +1,0 @@
-{
-  "name": "js-todo-app - Production",
-  "mail": {
-    "host": "prod-mail-server"
-  },
-  "db": "mongodb+srv://mlab-mongodb:myPassword123@cluster0-pj0nn.mongodb.net/test?retryWrites=true&w=majority"
-}

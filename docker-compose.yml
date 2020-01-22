@@ -1,0 +1,29 @@
+version: "3"
+# Names our volume
+volumes:
+  todoApp-db:
+
+services:
+  mysql:
+    image: mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=Password
+      - MYSQL_DATABASE=todoapp
+
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - "3306:3306"
+
+    volumes:
+      - todoApp-db:/var/lib/mysql
+
+  todo-app:
+    build: ./todoApp-MySQL
+    container_name: todo-app
+    ports:
+      - 5000:5000
+    links:
+      - mysql
+    depends_on:
+      - mysql
