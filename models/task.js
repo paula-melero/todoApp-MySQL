@@ -1,33 +1,41 @@
-// "use strict";
+const Sequelize = require("sequelize");
+const sequelize = require("../startup/db");
+const Joi = require("joi");
 
-//   const Task = sequelize.define(
-//     "Task",
-//     {
-//       title: {
-//         type: DataTypes.String(30),
-//         allowNull: false,
-//         validate: { min: 3 }
-//       },
-//       description: {
-//         type: DataTypes.TEXT,
-//         allowNull: false,
-//         validate: { min: 6 }
-//       },
-//       status: {
-//         type: DataTypes.STRING,
-//         defaultValue: "to do",
-//         validate: {
-//           isIn: [["to do", "done"]]
-//         }
-//       },
-//       createdBy: {
-//         type: DataTypes.INTEGER,
-//         allowNull: false
-//       }
-//     },
-//     {}
-//   );
-//   Task.associate = function(models) {
-//     Task.belongsTo(models.User, { foreignKey: "createdBy", as: "id" });
-//   };
-//   return Task;
+//SCHEMA
+const Task = sequelize.define("task", {
+  title: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    validate: { min: 3, max: 30 }
+  },
+  description: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+    validate: { min: 6, max: 255 }
+  },
+  status: {
+    type: Sequelize.STRING,
+    defaultValue: "to do",
+    validate: {
+      isIn: [["to do", "done"]]
+    }
+  }
+});
+
+//VALIDATION
+const validateTask = task => {
+  const schema = {
+    title: Joi.string()
+      .min(3)
+      .max(30)
+      .required(),
+    description: Joi.string()
+      .min(3)
+      .max(255)
+  };
+  return Joi.validate(task, schema);
+};
+
+exports.Task = Task;
+exports.validateTask = validateTask;

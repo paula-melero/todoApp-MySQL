@@ -1,10 +1,11 @@
-const Sequelize = require('sequelize');
-const sequelize = require('../startup/db');
-const jwt = require('jsonwebtoken');
-const config = require('config');
-const Joi = require('joi');
+const Sequelize = require("sequelize");
+const sequelize = require("../startup/db");
+const jwt = require("jsonwebtoken");
+const config = require("config");
+const Joi = require("joi");
 
-const User = sequelize.define('user', {
+//SCHEMA
+const User = sequelize.define("user", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -31,6 +32,7 @@ const User = sequelize.define('user', {
   }
 });
 
+//VALIDATION
 const validateUser = user => {
   const schema = {
     username: Joi.string()
@@ -46,12 +48,14 @@ const validateUser = user => {
   return Joi.validate(user, schema);
 };
 
+//AUTH TOKEN GENERATOR
 const generateAuthToken = (id, isAdmin) => {
   return (token = jwt.sign(
     { id: id, isAdmin: isAdmin },
-    config.get('jwtPrivateKey')
+    config.get("jwtPrivateKey")
   ));
 };
+
 exports.User = User;
 exports.validateUser = validateUser;
 exports.generateAuthToken = generateAuthToken;
