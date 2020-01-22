@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const sequelize = require('../startup/db');
 const jwt = require('jsonwebtoken');
 const config = require('config');
+const Joi = require('joi');
 
 const User = sequelize.define('user', {
   id: {

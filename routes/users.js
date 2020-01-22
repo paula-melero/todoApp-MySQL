@@ -2,7 +2,6 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const _ = require('lodash');
 const router = express.Router();
-const Joi = require('joi');
 const auth = require('../middleware/auth');
 const asyncMiddleware = require('../middleware/async');
 const admin = require('../middleware/admin');
@@ -46,7 +45,12 @@ router.post(
   asyncMiddleware(async (req, res) => {
     const { error } = validateUser(req.body);
 
-    if (error) return res.status(400).json(error.details[0].message);
+    if (error)
+      return res.status(400).json({
+        statusCode: 400,
+        errorCode: error.details[0].path + error.name,
+        message: error.details[0].message
+      });
 
     const { username, password } = req.body;
 
