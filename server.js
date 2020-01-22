@@ -6,7 +6,7 @@ const path = require("path");
 const index_path = path.join(__dirname, "/public");
 
 const sequelize = require("./startup/db");
-require("./startup/routes")(app);
+require("./startup/routes").default(app);
 require("./startup/db");
 require("./startup/logging")();
 require("./startup/config")();

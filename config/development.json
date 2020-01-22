@@ -1,7 +1,9 @@
 {
-  "name": "js-todo-app - Development",
-  "mail": {
-    "host": "dev-mail-server"
-  },
-  "db": "mongodb://mongo:27017/todoapp"
+  "jwtPrivateKey": "1234",
+  "dbName": "oLbnEAC5tr",
+  "dbHost": "remotemysql.com",
+  "dbUsername": "oLbnEAC5tr",
+  "dbPassword": "AvK1rxQl7T",
+  "socketPath": "",
+  "port": 5000
 }
