@@ -30,7 +30,7 @@ jobs:
   include:
     - stage: deployment
       script:
-        - docker-compose build .
+        - docker-compose build -t pmelero/todo-app
         - docker tag pmelero/todo-app registry.heroku.com/$HEROKU_APP_NAME/web
 
 deploy:
