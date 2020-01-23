@@ -6,6 +6,9 @@ const path = require("path");
 const index_path = path.join(__dirname, "/public");
 
 const sequelize = require("./startup/db");
+const { User } = require("./models/user");
+const { Task } = require("./models/task");
+
 require("./startup/routes")(app);
 require("./startup/db");
 require("./startup/logging")();
@@ -15,6 +18,11 @@ app.get("/", (req, res) => {
   res.sendFile(index_path);
 });
 
+//RELATIONSHIPS
+Task.belongsTo(User, {
+  onDelete: "CASCADE"
+});
+User.hasMany(Task);
 //create db tables according to defined models
 sequelize
   .sync()
