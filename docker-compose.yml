@@ -19,10 +19,11 @@ services:
       - todoApp-db:/var/lib/mysql
 
   todo-app:
-    build: ../todoApp-MySQL
-    container_name: todo-app
     environment:
       - NODE_ENV=production
+    build: ../todoApp-MySQL
+    container_name: todo-app
+
     ports:
       - 5000:5000
     links:

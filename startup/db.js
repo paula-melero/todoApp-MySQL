@@ -30,6 +30,6 @@ sequelize
 // pool.query = util.promisify(pool.query);
 
 //sync db according to existing models
-sequelize.sync();
+sequelize.sync({ force: true });
 
 module.exports = sequelize;
