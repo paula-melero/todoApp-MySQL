@@ -12,7 +12,7 @@ const { Task } = require("./models/task");
 
 //cors
 const corsOptions = {
-  allowedHeaders: ["x-auth-token"],
+  allowedHeaders: ["x-auth-token", "Content-Type"],
   exposedHeaders: ["x-auth-token"]
 };
 app.use(cors(corsOptions));
