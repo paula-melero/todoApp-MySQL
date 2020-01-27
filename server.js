@@ -2,13 +2,14 @@ const config = require("config");
 const winston = require("winston");
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const path = require("path");
 const index_path = path.join(__dirname, "/public");
 
 const sequelize = require("./startup/db");
 const { User } = require("./models/user");
 const { Task } = require("./models/task");
-
+app.use(cors());
 require("./startup/routes")(app);
 require("./startup/db");
 require("./startup/logging")();
