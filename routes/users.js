@@ -54,7 +54,8 @@ router.post(
       });
     const { username, password } = req.body;
 
-    const foundUsername = User.findOne({ where: { username: username } });
+    const foundUsername = await User.findOne({ where: { username: username } });
+
     if (foundUsername)
       res.status(400).json({
         statusCode: 400,

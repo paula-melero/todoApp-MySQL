@@ -12,6 +12,8 @@ const { Task } = require("./models/task");
 
 //cors
 const corsOptions = {
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: ["*"],
   allowedHeaders: ["x-auth-token", "Content-Type"],
   exposedHeaders: ["x-auth-token"]
 };
