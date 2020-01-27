@@ -9,7 +9,13 @@ const index_path = path.join(__dirname, "/public");
 const sequelize = require("./startup/db");
 const { User } = require("./models/user");
 const { Task } = require("./models/task");
-app.use(cors());
+
+//cors
+const corsOptions = {
+  exposedHeaders: ["x-auth-token"]
+};
+app.use(cors(corsOptions));
+
 require("./startup/routes")(app);
 require("./startup/db");
 require("./startup/logging")();
