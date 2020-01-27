@@ -52,8 +52,15 @@ router.post(
         errorCode: error.details[0].path + error.name,
         message: error.details[0].message
       });
-
     const { username, password } = req.body;
+
+    const foundUsername = User.findOne({ where: { username: username } });
+    if (foundUsername)
+      res.status(400).json({
+        statusCode: 400,
+        errorCode: "ExistingUsername",
+        message: "Username already exists"
+      });
 
     //hash password
     const salt = await bcrypt.genSalt(10);
