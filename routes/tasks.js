@@ -1,41 +1,53 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const auth = require("../middleware/auth");
-const asyncMiddleware = require("../middleware/async");
-const { Task, validateTask } = require("../models/task");
+const auth = require('../middleware/auth');
+const asyncMiddleware = require('../middleware/async');
+const validateParams = require('../middleware/validate');
+const { Task, validateTask } = require('../models/task');
 
 //GET ALL TASKS FOR AUTH USER
 router.get(
-  "/",
+  '/',
   auth,
   asyncMiddleware(async (req, res, next) => {
-    const tasks = await Task.findAll({ where: { userId: req.user.id } });
+    const { pageSize, page } = req.query;
+    const offset = (page - 1) * pageSize;
+    const limit = +pageSize;
 
+    const tasks = await Task.findAll({
+      offset: offset,
+      limit: limit,
+      where: { userId: req.user.id },
+      order: [['updatedAt', 'DESC']]
+    });
     res.status(200).json(tasks);
   })
 );
 
 //GET ONE TASK
-// router.get(
-//   "/:id",
-//   auth,
-//   asyncMiddleware(async (req, res) => {
-//     const task = await Task.findOne({
-//       _id: req.params.id,
-//       createdBy: req.user._id
-//     });
+router.get(
+  '/:id',
+  auth,
+  validateParams,
+  asyncMiddleware(async (req, res) => {
+    const task = await Task.findOne({
+      where: {
+        id: req.params.id,
+        userId: req.user.id
+      }
+    });
 
-//     if (!task)
-//       return res
-//         .status(404)
-//         .json({ message: "Task with the given ID was not found" });
-//     res.status(200).json(task);
-//   })
-// );
+    if (!task)
+      return res
+        .status(404)
+        .json({ message: 'Task with the given ID was not found' });
+    res.status(200).json(task);
+  })
+);
 
-// //CREATE TASK FOR AUTH USER
+//CREATE TASK FOR AUTH USER
 router.post(
-  "/",
+  '/',
   auth,
   asyncMiddleware(async (req, res) => {
     const { error } = validateTask(req.body);
@@ -58,67 +70,60 @@ router.post(
   })
 );
 
-// //UPDATE TASK
-// router.put(
-//   "/:id",
-//   auth,
-//   asyncMiddleware(async (req, res) => {
-//     const { error } = validateTask(req.body);
+//UPDATE TASK
+router.put(
+  '/:id',
+  auth,
+  validateParams,
+  asyncMiddleware(async (req, res) => {
+    const { error } = validateTask(req.body);
 
-//     if (error) return res.status(400).json(error.details[0].message);
+    if (error) return res.status(400).json(error.details[0].message);
 
-//     const { title, description } = req.body;
-//     //if task does not exist but id is valid
-//     const foundId = await Task.findById(req.params.id);
-//     if (!foundId)
-//       return res
-//         .status(404)
-//         .json({ message: "Task with the given ID was not found" });
+    const { title, description } = req.body;
 
-//     const task = await Task.findOneAndUpdate(
-//       {
-//         _id: req.params.id,
-//         createdBy: req.user._id
-//       },
-//       {
-//         $set: { title, description }
-//       },
-//       { new: true }
-//     );
+    const result = await Task.update(
+      {
+        title: title,
+        description: description
+      },
+      {
+        where: {
+          id: req.params.id,
+          userId: req.user.id
+        }
+      }
+    );
+    console.log('UPDATED:', result);
+    if (result[0] === 0)
+      return res
+        .status(404)
+        .json({ message: 'Task with the given ID was not found' });
 
-//     //if task was not createdBy logged in user
-//     if (!task)
-//       return res
-//         .status(401)
-//         .json({ message: "Access denied. Cannot edit task with given ID." });
-
-//     res.status(200).json(task);
-//   })
-// );
+    res.status(200).json({ message: 'Successfully updated task!' });
+  })
+);
 
 // //DELETE TASK
-// router.delete(
-//   "/:id",
-//   auth,
-//   asyncMiddleware(async (req, res) => {
-//     const foundId = await Task.findById(req.params.id);
-//     if (!foundId)
-//       return res
-//         .status(404)
-//         .json({ message: "Task with the given ID was not found" });
+router.delete(
+  '/:id',
+  auth,
+  validateParams,
+  asyncMiddleware(async (req, res) => {
+    const result = await Task.destroy({
+      where: {
+        id: req.params.id,
+        userId: req.user.id
+      }
+    });
 
-//     const result = await Task.findOneAndDelete({
-//       _id: req.params.id,
-//       createdBy: req.user._id
-//     });
+    if (!result)
+      return res
+        .status(404)
+        .json({ message: 'Task with the given ID was not found' });
 
-//     if (!result)
-//       return res.status(401).json({
-//         message: "Access denied. Cannot delete task with given ID."
-//       });
-
-//     res.status(200).json(result);
-//   })
-// );
+    res.status(200).json({ message: 'Successfully deleted task!' });
+  })
+);
 
 module.exports = router;
