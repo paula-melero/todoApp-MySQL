@@ -31,7 +31,8 @@ const validateTask = task => {
       .required(),
     description: Joi.string()
       .min(3)
-      .max(255)
+      .max(255),
+    status: Joi.string()
   };
   return Joi.validate(task, schema);
 };
