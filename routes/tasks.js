@@ -1,13 +1,13 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const auth = require('../middleware/auth');
-const asyncMiddleware = require('../middleware/async');
-const validateParams = require('../middleware/validate');
-const { Task, validateTask } = require('../models/task');
+const auth = require("../middleware/auth");
+const asyncMiddleware = require("../middleware/async");
+const validateParams = require("../middleware/validate");
+const { Task, validateTask } = require("../models/task");
 
 //GET ALL TASKS FOR AUTH USER
 router.get(
-  '/',
+  "/",
   auth,
   asyncMiddleware(async (req, res, next) => {
     const { pageSize, page } = req.query;
@@ -18,7 +18,7 @@ router.get(
       offset: offset,
       limit: limit,
       where: { userId: req.user.id },
-      order: [['updatedAt', 'DESC']]
+      order: [["updatedAt", "DESC"]]
     });
     res.status(200).json(tasks);
   })
@@ -26,7 +26,7 @@ router.get(
 
 //GET ONE TASK
 router.get(
-  '/:id',
+  "/:id",
   auth,
   validateParams,
   asyncMiddleware(async (req, res) => {
@@ -40,14 +40,14 @@ router.get(
     if (!task)
       return res
         .status(404)
-        .json({ message: 'Task with the given ID was not found' });
+        .json({ message: "Task with the given ID was not found" });
     res.status(200).json(task);
   })
 );
 
 //CREATE TASK FOR AUTH USER
 router.post(
-  '/',
+  "/",
   auth,
   asyncMiddleware(async (req, res) => {
     const { error } = validateTask(req.body);
@@ -72,7 +72,7 @@ router.post(
 
 //UPDATE TASK
 router.put(
-  '/:id',
+  "/:id",
   auth,
   validateParams,
   asyncMiddleware(async (req, res) => {
@@ -80,12 +80,13 @@ router.put(
 
     if (error) return res.status(400).json(error.details[0].message);
 
-    const { title, description } = req.body;
+    const { title, description, status } = req.body;
 
     const result = await Task.update(
       {
         title: title,
-        description: description
+        description: description,
+        status: status
       },
       {
         where: {
@@ -94,19 +95,19 @@ router.put(
         }
       }
     );
-    console.log('UPDATED:', result);
+
     if (result[0] === 0)
       return res
         .status(404)
-        .json({ message: 'Task with the given ID was not found' });
+        .json({ message: "Task with the given ID was not found" });
 
-    res.status(200).json({ message: 'Successfully updated task!' });
+    res.status(200).json({ message: "Successfully updated task!" });
   })
 );
 
 // //DELETE TASK
 router.delete(
-  '/:id',
+  "/:id",
   auth,
   validateParams,
   asyncMiddleware(async (req, res) => {
@@ -120,9 +121,9 @@ router.delete(
     if (!result)
       return res
         .status(404)
-        .json({ message: 'Task with the given ID was not found' });
+        .json({ message: "Task with the given ID was not found" });
 
-    res.status(200).json({ message: 'Successfully deleted task!' });
+    res.status(200).json({ message: "Successfully deleted task!" });
   })
 );
 
