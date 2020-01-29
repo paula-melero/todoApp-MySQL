@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm ci
 # Bundle app source
 COPY . .
-EXPOSE 8080
+EXPOSE 5000
 
 # Define command to run app
 CMD [ "node", "server.js" ]

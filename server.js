@@ -24,10 +24,6 @@ require("./startup/db");
 require("./startup/logging")();
 require("./startup/config")();
 
-app.get("/", (req, res) => {
-  res.sendFile(index_path);
-});
-
 //RELATIONSHIPS
 Task.belongsTo(User, {
   onDelete: "CASCADE"

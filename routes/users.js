@@ -72,7 +72,7 @@ router.post(
 
     //generate JWT
     const token = generateAuthToken(result.dataValues.id, 0);
-
+    const name = process.env.MYNAME || "World";
     //return token in HTTP header
     res.header("x-auth-token", token);
     res.status(201).json(_.pick(result, ["id", "username"]));

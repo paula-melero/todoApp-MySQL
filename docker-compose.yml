@@ -18,25 +18,38 @@ services:
     volumes:
       - todoApp-db:/var/lib/mysql
 
-  todo-app:
+  todo-app1:
     environment:
       - NODE_ENV=production
     build: ../todoApp-MySQL
-    container_name: todo-app
-
+    container_name: todo-app1
     ports:
-      - 5000:5000
+      - 5001:5000
     links:
       - mysql
     depends_on:
       - mysql
-  # nginx:
-  #   image: "nginx:latest"
-  #   restart: always
-  #   build:
-  #     context: ./nginx
-  #     dockerfile: Dockerfile.dev
-  #   ports:
-  #     - 8080:80
-  #   depends_on:
-  #     - todo-app
+
+  todo-app2:
+    environment:
+      - NODE_ENV=production
+      - MYNAME=Paula
+    build: ../todoApp-MySQL
+    container_name: todo-app2
+    ports:
+      - 5002:5000
+    links:
+      - mysql
+    depends_on:
+      - mysql
+  load-balancer:
+    restart: always
+    container_name: loadbalancer
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    ports:
+      - 8080:80
+    depends_on:
+      - todo-app1
+      - todo-app2
