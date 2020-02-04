@@ -8,7 +8,7 @@ RUN npm ci
 # Bundle app source
 COPY . .
 EXPOSE 5000
-
+ENV NODE_ENV=production
 # Define command to run app
 CMD [ "node", "server.js" ]
 
