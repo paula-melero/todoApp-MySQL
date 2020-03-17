@@ -1,5 +1,4 @@
 const express = require("express");
-const path = require("path");
 var compression = require("compression");
 const error = require("../middleware/error");
 const tasks = require("../routes/tasks");
